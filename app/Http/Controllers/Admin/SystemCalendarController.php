@@ -53,7 +53,7 @@ class SystemCalendarController extends Controller
                         . " " . $source['suffix']),
                     'start' => $start_time,
                     'end' => $end_time,
-                    'url'   => route($source['route'], $model->id),
+                    'url'   => route('admin.events.update', $model->id),
                 ];
             }
         }
