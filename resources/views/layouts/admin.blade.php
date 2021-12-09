@@ -21,6 +21,9 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
+
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+
     @yield('styles')
 </head>
 
@@ -30,7 +33,9 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" href="#">
-            <span class="navbar-brand-full">{{ config('app.name', 'Laravel') }}</span>
+            <span class="navbar-brand-full"><i class="nav-icon fa-fw fas fa-calendar">
+
+            </i></span>
             <span class="navbar-brand-minimized">{{ trans('panel.site_title') }}</span>
         </a>
         <button class="navbar-toggler sidebar-toggler d-md-down-none" type="button" data-toggle="sidebar-lg-show">
@@ -61,13 +66,16 @@
 
 
             <div style="padding-top: 20px" class="container-fluid">
-                @if(session('message'))
-                    <div class="row mb-2">
-                        <div class="col-lg-12">
-                            <div class="alert alert-success" role="alert">{{ session('message') }}</div>
-                        </div>
-                    </div>
-                @endif
+
+              @if(Session::has('message'))
+                  <div class="alert alert-block">
+                      <p class="alert {{ Session::get('alert-class', 'alert-info') }}">
+                          <button type="button" class="close" data-dismiss="alert">×</button>
+                      {{ Session::get('message') }}
+                      </p>
+                  </div>
+              @endif
+
                 @if($errors->count() > 0)
                     <div class="alert alert-danger">
                         <ul class="list-unstyled">

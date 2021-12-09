@@ -66,4 +66,17 @@
 
     </div>
 </div>
+
+<script type="text/javascript">
+   $(function () {
+       $('#start_time').datetimepicker({
+           icons: {
+               time: "fa fa-clock-o",
+               date: "fa fa-calendar",
+               up: "fa fa-arrow-up",
+               down: "fa fa-arrow-down"
+           }
+       });
+   });
+</script>
 @endsection

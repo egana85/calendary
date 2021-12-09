@@ -9,6 +9,7 @@ use App\Http\Requests\StoreEventRequest;
 use App\Http\Requests\UpdateEventRequest;
 use App\Venue;
 use Gate;
+use App\Session;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,7 +35,41 @@ class EventsController extends Controller
 
     public function store(StoreEventRequest $request)
     {
+        $startTime = date('Y-m-d H:i', strtotime($request->input('start_time')));
+        $endTime = date('Y-m-d H:i', strtotime($request->input('end_time')));
+        $venue_id = $request->input('venue_id');
+
+        $eventsCount = Event::where(function ($query) use ($startTime, $endTime, $venue_id) {
+         $query->where(function ($query) use ($startTime, $endTime,$venue_id) {
+            $query->where('start_time', '>=', $startTime)
+                    ->where('end_time', '<', $startTime)
+                    ->where('venue_id',$venue_id);
+            })
+            ->orWhere(function ($query) use ($startTime, $endTime, $venue_id) {
+                $query->where('start_time', '<', $endTime)
+                        ->where('end_time', '>=', $endTime)
+                        ->where('venue_id',$venue_id);
+            });
+        })->count();
+
+      if($eventsCount>0)
+      {
+        Session()->flash('message', 'Ya existe un evento para esa fecha');
+        Session()->flash('alert-class', 'alert-danger');
+
+        return redirect()->back()->withInput();
+      }
+      else {
         $event = Event::create($request->all());
+
+
+        Session()->flash('message', 'Evento creado con exito');
+        Session()->flash('alert-class', 'alert-success');
+
+        //envio de correo a usuario encargado
+      }
+
+
 
         return redirect()->route('admin.events.index');
     }
