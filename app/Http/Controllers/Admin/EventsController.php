@@ -39,16 +39,24 @@ class EventsController extends Controller
         $endTime = date('Y-m-d H:i', strtotime($request->input('end_time')));
         $venue_id = $request->input('venue_id');
 
+        if($startTime > $endTime)
+        {
+          Session()->flash('message', 'intervalo de tiempo no valido');
+          Session()->flash('alert-class', 'alert-danger');
+
+          return redirect()->back()->withInput();
+        }
+
         $eventsCount = Event::where(function ($query) use ($startTime, $endTime, $venue_id) {
          $query->where(function ($query) use ($startTime, $endTime,$venue_id) {
             $query->where('start_time', '>=', $startTime)
                     ->where('end_time', '<', $startTime)
-                    ->where('venue_id',$venue_id);
+                    ->where('venue_id', $venue_id);
             })
             ->orWhere(function ($query) use ($startTime, $endTime, $venue_id) {
                 $query->where('start_time', '<', $endTime)
                         ->where('end_time', '>=', $endTime)
-                        ->where('venue_id',$venue_id);
+                        ->where('venue_id', $venue_id);
             });
         })->count();
 
@@ -59,9 +67,9 @@ class EventsController extends Controller
 
         return redirect()->back()->withInput();
       }
-      else {
+      else
+      {
         $event = Event::create($request->all());
-
 
         Session()->flash('message', 'Evento creado con exito');
         Session()->flash('alert-class', 'alert-success');
@@ -87,9 +95,50 @@ class EventsController extends Controller
 
     public function update(UpdateEventRequest $request, Event $event)
     {
-        $event->update($request->all());
+      $startTime = date('Y-m-d H:i', strtotime($request->input('start_time')));
+      $endTime = date('Y-m-d H:i', strtotime($request->input('end_time')));
 
-        return redirect()->route('admin.events.index');
+      if($startTime > $endTime)
+      {
+        Session()->flash('message', 'intervalo de tiempo no valido');
+        Session()->flash('alert-class', 'alert-danger');
+
+        return redirect()->back()->withInput();
+      }
+      $venue_id = $request->input('venue_id');
+
+      $eventsCount = Event::where(function ($query) use ($startTime, $endTime, $venue_id) {
+       $query->where(function ($query) use ($startTime, $endTime,$venue_id) {
+          $query->where('start_time', '>=', $startTime)
+                  ->where('end_time', '<', $startTime)
+                  ->where('venue_id', $venue_id);
+          })
+          ->orWhere(function ($query) use ($startTime, $endTime, $venue_id) {
+              $query->where('start_time', '<', $endTime)
+                      ->where('end_time', '>=', $endTime)
+                      ->where('venue_id', $venue_id);
+          });
+      })->count();
+
+    if($eventsCount>0)
+    {
+      Session()->flash('message', 'Ya existe un evento para esa fecha');
+      Session()->flash('alert-class', 'alert-danger');
+
+      return redirect()->back()->withInput();
+    }
+    else
+    {
+      $event->update($request->all());
+
+      Session()->flash('message', 'Evento actualizado con exito');
+      Session()->flash('alert-class', 'alert-success');
+
+      return redirect()->route('admin.events.index');
+    }
+
+
+
     }
 
     public function show(Event $event)
@@ -106,13 +155,17 @@ class EventsController extends Controller
         abort_if(Gate::denies('event_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $event->delete();
-
+        Session()->flash('message', 'Evento borrado con exito');
+        Session()->flash('alert-class', 'alert-warning');
         return back();
     }
 
     public function massDestroy(MassDestroyEventRequest $request)
     {
         Event::whereIn('id', request('ids'))->delete();
+
+        Session()->flash('message', 'Eventos borrados con exito');
+        Session()->flash('alert-class', 'alert-warning');
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

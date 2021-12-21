@@ -35,7 +35,7 @@
             </div>
             <div class="form-group {{ $errors->has('end_time') ? 'has-error' : '' }}">
                 <label for="end_time">{{ trans('cruds.event.fields.end_time') }}</label>
-                <input type="text" id="end_time" name="end_time" class="form-control datetime" value="{{ old('end_time', isset($event) ? $event->end_time : '') }}">
+                <input type="text" id="end_time" name="end_time" class="form-control datetime" onchange="validarmeses();" value="{{ old('end_time', isset($event) ? $event->end_time : '') }}">
                 @if($errors->has('end_time'))
                     <em class="invalid-feedback">
                         {{ $errors->first('end_time') }}
@@ -62,15 +62,13 @@
                 <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
             </div>
         </form>
-
-
     </div>
 </div>
 
 <script type="text/javascript">
    $(function () {
        $('#start_time').datetimepicker({
-           icons: {
+           locale: 'es',icons: {
                time: "fa fa-clock-o",
                date: "fa fa-calendar",
                up: "fa fa-arrow-up",
