@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.calendar')
 @section('content')
 <h3 class="page-title">{{ trans('global.systemCalendar') }}</h3>
 <div class="card">
@@ -7,7 +7,7 @@
     </div>
 
     <div class="card-body">
-        <form action="{{ route('admin.systemCalendar') }}" method="GET">
+        <form action="{{ route('Calendary') }}" method="GET">
             Venue:
             <select name="venue_id">
                 <option value="">-- all venues --</option>
